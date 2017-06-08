@@ -7,11 +7,7 @@ use Faker\Factory as Faker;
 
 class LessonsTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
+
     public function run()
     {
         //Lesson::truncate();
@@ -23,7 +19,9 @@ class LessonsTableSeeder extends Seeder
             DB::table('lessons')->insert([
                 'title' => $faker->sentence(5),
                 'body' => $faker->paragraph(4),
-                'some_bool' => $faker->boolean()
+                'some_bool' => $faker->boolean(),
+                'created_at' => $faker->dateTime,
+                'updated_at' => $faker->dateTime
             ]);
         }
     }

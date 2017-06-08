@@ -3,15 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Lesson;
-use Acme\Transformers\LessonTransformer;
-
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Response;
+use Acme\Transformers\LessonTransformer;
 
-
-class LessonsController extends ApiController
+class LessonsController extends Controller
 {
 
     protected $lessonTransformer;
@@ -34,20 +31,7 @@ class LessonsController extends ApiController
 
         // This is how it should be done
 
-
-        //$lessons = Lesson::all();
-
-        // returns 5 entries
-        //$lessons = Lesson::paginate(5);
-
-        // http://localhost:8000/api/v1/lessons?limit=3&page=2
-        // returns amount specisied by user in limit or if not specified then 3 elements
-        $limit = Input::get('limit') ?: 3;
-        $lessons = Lesson::paginate($limit); // returns 5 entries
-
-        // this will give you list of class methods which you can use
-        // dd(get_class_methods($lessons));
-
+        $lessons = Lesson::all();
 
         // Quick display - works
         // return response()->json(compact('lessons'));
@@ -58,15 +42,9 @@ class LessonsController extends ApiController
         // ],200);
 
         // Transform - works
-        return $this->setStatusCode(200)->apiRespond([
-            'data' => $this->lessonTransformer->transformCollection($lessons->all()), // here use transformCollection() because its collection of array's many lessons
-            'paginator' => [
-                'total_count' => $lessons->total(),
-                'total_pages' => ceil($lessons->total() / $lessons->perPage()),
-                'current_page' => $lessons->currentPage(),
-                'limit' => $lessons->perPage()
-            ]
-        ]);
+        return response()->json([
+            'data' => $this->lessonTransformer->transformCollection($lessons->toArray()) // here use transformCollection() because its collection of array's many lessons
+        ],200);
     }
 
     public function show($id) {
@@ -74,13 +52,17 @@ class LessonsController extends ApiController
 
         if( ! $lesson) {
 
-            // from ApiController
             return $this->respondNotFound('Lesson does not exist');
+//            return response()->json([
+//               'error' => [
+//                   'message' => 'Lesson does not exist'
+//               ]
+//            ], 404 );
         }
 
         //return response()->json(compact('lesson'));
-        return $this->setStatusCode(200)->apiRespond([
+        return response()->json([
             'data' => $this->lessonTransformer->transform($lesson) // here use transform() because its only one dimensional array single lesson
-        ]);
+        ], 200);
     }
 }

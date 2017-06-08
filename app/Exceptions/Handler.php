@@ -36,6 +36,7 @@ class Handler extends ExceptionHandler
         parent::report($e);
     }
 
+
     /**
      * Render an exception into an HTTP response.
      *
@@ -43,8 +44,26 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $e
      * @return \Illuminate\Http\Response
      */
+
+    /*
+     *
+     * When you do findOrFail in LessonController
+        Then you need to catch exception for the scenario when there is no lesson 333 when you call to get tags
+     * */
+
     public function render($request, Exception $e)
     {
-        return parent::render($request, $e);
+
+        // dd($e) returns ModelNotFoundException
+
+        if ($e instanceof ModelNotFoundException) {
+
+            return response()->json(['error' => ['message' => 'Resource Not Found.']], 404);
+        } else {
+
+            return parent::render($request, $e);
+        }
     }
+
+
 }
